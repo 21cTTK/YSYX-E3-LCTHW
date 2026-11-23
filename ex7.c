@@ -39,6 +39,7 @@ int main(int argc, char *argv[])
     // this makes no sense, just a demo of something weird
     char nul_byte = '\0';
     int care_percentage = bugs * nul_byte;
+	printf("a nul_byte is printed as %s(string) and %c(char).\n", nul_byte);
     printf("Which means you should care %d%%.\n", care_percentage);
 
     return 0;
