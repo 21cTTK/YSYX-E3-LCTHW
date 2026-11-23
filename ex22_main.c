@@ -20,6 +20,11 @@ void scope_demo(int count)
     log_info("count after assign: %d", count);
 }
 
+void set_count(int *count)
+{
+    *count = 3000;
+}
+
 int main(int argc, char *argv[])
 {
     struct State state = {.the_age = 37};
@@ -51,6 +56,9 @@ int main(int argc, char *argv[])
     scope_demo(count * 20);
 
     log_info("count after calling scope_demo: %d", count);
+
+    set_count(&count);
+    log_info("count after calling set_count: %d", count);
 
     return 0;
 }
