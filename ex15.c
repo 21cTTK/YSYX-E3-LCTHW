@@ -1,5 +1,41 @@
 #include <stdio.h>
 
+void print_arrays(char *names[], int ages[], int count)
+{
+    int i = 0;
+    while (i < count) {
+        printf("%s has %d years alive.\n", names[i], ages[i]);
+        i++;
+    }
+}
+
+void print_offsets(char **cur_name, int *cur_age, int count)
+{
+    int i = 0;
+    while (i < count) {
+        printf("%s is %d years old.\n", *(cur_name + i), *(cur_age + i));
+        i++;
+    }
+}
+
+void print_indexed(char **cur_name, int *cur_age, int count)
+{
+    int i = 0;
+    while (i < count) {
+        printf("%s is %d years old again.\n", cur_name[i], cur_age[i]);
+        i++;
+    }
+}
+
+void print_walk(char **cur_name, int *cur_age, int *end)
+{
+    while (cur_age != end) {
+        printf("%s lived %d years so far.\n", *cur_name, *cur_age);
+        cur_name++;
+        cur_age++;
+    }
+}
+
 int main(int argc, char *argv[])
 {
     // create two arrays we care about
@@ -11,38 +47,24 @@ int main(int argc, char *argv[])
 
     // safely get the size of ages
     int count = sizeof(ages) / sizeof(int);
-    int i = 0;
 
-    // first way using indexing
-    for (i = 0; i < count; i++) {
-        printf("%s has %d years alive.\n", names[i], ages[i]);
-    }
-
+    print_arrays(names, ages, count);
     printf("---\n");
 
-    // setup the pointers to the start of the arrays
-    int *cur_age = ages;
-    char **cur_name = names;
-
-    // second way using pointers
-    for (i = 0; i < count; i++) {
-        printf("%s is %d years old.\n",
-                *(cur_name + i), *(cur_age + i));
-    }
-
+    print_offsets(names, ages, count);
     printf("---\n");
 
-    // third way, pointers are just arrays
-    for (i = 0; i < count; i++) {
-        printf("%s is %d years old again.\n", cur_name[i], cur_age[i]);
-    }
-
+    print_indexed(names, ages, count);
     printf("---\n");
 
-    // fourth way with pointers in a stupid complex way
-    for (cur_name = names, cur_age = ages;
-            (cur_age - ages) < count; cur_name++, cur_age++) {
-        printf("%s lived %d years so far.\n", *cur_name, *cur_age);
+    print_walk(names, ages, ages + count);
+
+    for (int i = 0; i < count; i++) {
+        printf("%s: %p %p\n", names[i], (void *)(names + i), (void *)(ages + i));
+    }
+
+    for (char **arg = argv + 1; *arg; arg++) {
+        printf("arg: %s\n", *arg);
     }
 
     return 0;
