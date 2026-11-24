@@ -104,3 +104,76 @@ List *List_merge_sort(List *list, List_compare cmp)
     }
     return sorted;
 }
+
+int List_insert_sorted(List *list, void *value, List_compare cmp)
+{
+    if (!list || !cmp)
+        return -1;
+
+    ListNode *after = list->first;
+    while (after && cmp(after->value, value) <= 0) {
+        after = after->next;
+    }
+
+    ListNode *node = malloc(sizeof(ListNode));
+    if (!node)
+        return -1;
+
+    ListNode *before = after ? after->prev : list->last;
+    *node = (ListNode){ .prev = before, .next = after, .value = value };
+
+    if (before) {
+        before->next = node;
+    } else {
+        list->first = node;
+    }
+
+    if (after) {
+        after->prev = node;
+    } else {
+        list->last = node;
+    }
+
+    list->count++;
+    return 0;
+}
+
+static List List_take_run(List *input, int width)
+{
+    List run = { 0 };
+
+    while (input->first && run.count < width) {
+        List_move_first(&run, input);
+    }
+    return run;
+}
+
+List *List_merge_sort_bottom_up(List *list, List_compare cmp)
+{
+    if (!list || !cmp)
+        return NULL;
+    if (List_count(list) <= 1)
+        return list;
+
+    List *sorted = List_copy(list);
+    if (!sorted)
+        return NULL;
+
+    int count = List_count(sorted);
+    for (int width = 1; width < count;) {
+        List input = *sorted;
+        *sorted = (List){ 0 };
+
+        while (input.first) {
+            List left = List_take_run(&input, width);
+            List right = List_take_run(&input, width);
+            List_merge(&left, &right, cmp);
+            List_join(sorted, &left);
+        }
+
+        if (width > count / 2)
+            break;
+        width *= 2;
+    }
+    return sorted;
+}

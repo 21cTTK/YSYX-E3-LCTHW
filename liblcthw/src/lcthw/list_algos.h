@@ -9,4 +9,7 @@ int List_bubble_sort(List *list, List_compare cmp);
 /* Return the input for zero or one node, otherwise return a sorted shallow copy. */
 List *List_merge_sort(List *list, List_compare cmp);
 
+int List_insert_sorted(List *list, void *value, List_compare cmp);
+List *List_merge_sort_bottom_up(List *list, List_compare cmp);
+
 #endif

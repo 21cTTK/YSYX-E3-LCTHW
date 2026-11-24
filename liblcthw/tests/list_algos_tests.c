@@ -80,12 +80,40 @@ static char *test_short_lists(void)
     return NULL;
 }
 
+static char *test_insert_sorted(void)
+{
+    List *list = List_create();
+    mu_assert(list, "Could not create list.");
+    mu_assert(List_insert_sorted(list, &three, compare) == 0, "First insert failed.");
+    mu_assert(List_insert_sorted(list, &two, compare) == 0, "Front insert failed.");
+    mu_assert(List_insert_sorted(list, &one, compare) == 0, "Front insert failed.");
+    mu_assert(List_insert_sorted(list, &another_two, compare) == 0 && in_order(list),
+            "Insertion did not keep the list sorted or stable.");
+    List_destroy(list);
+    return NULL;
+}
+
+static char *test_bottom_up(void)
+{
+    List *list = make_list();
+    mu_assert(list, "Could not create list.");
+    List *sorted = List_merge_sort_bottom_up(list, compare);
+    mu_assert(sorted != list && in_order(sorted), "Bottom-up sort failed.");
+    mu_assert(List_first(list) == &three && List_count(list) == 4,
+            "Bottom-up sort changed its input.");
+    List_destroy(sorted);
+    List_destroy(list);
+    return NULL;
+}
+
 static char *all_tests(void)
 {
     mu_suite_start();
     mu_run_test(test_bubble_sort);
     mu_run_test(test_merge_sort);
     mu_run_test(test_short_lists);
+    mu_run_test(test_insert_sorted);
+    mu_run_test(test_bottom_up);
     return NULL;
 }
 

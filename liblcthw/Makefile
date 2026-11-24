@@ -49,3 +49,11 @@ check:
 	fi
 
 .PHONY: all dev tests clean install check
+
+bench: build/list_sort_bench
+	./build/list_sort_bench
+
+build/list_sort_bench: tests/list_sort_bench.c $(TARGET)
+	$(CC) $(CFLAGS) $(LDFLAGS) -o $@ $< $(TARGET) $(LIBS)
+
+.PHONY: bench
