@@ -73,6 +73,53 @@ static char *test_destroy(void)
     return NULL;
 }
 
+static char *test_copy(void)
+{
+    List *original = List_create();
+    mu_assert(original != NULL, "Failed to create original.");
+    List_push(original, test1);
+    List_push(original, test2);
+    List *copy = List_copy(original);
+    mu_assert(copy && copy->first != original->first && List_count(copy) == 2,
+            "Copy should own separate nodes.");
+    mu_assert(List_shift(copy) == test1 && List_pop(copy) == test2 &&
+            List_count(original) == 2, "Copy should keep order and leave original alone.");
+    List_destroy(copy);
+    List_destroy(original);
+    return NULL;
+}
+
+static char *test_split_join(void)
+{
+    List *head = List_create();
+    mu_assert(head != NULL, "Failed to create head.");
+    List_push(head, test1);
+    List_push(head, test2);
+    List_push(head, test3);
+    mu_assert(List_split(head, -1) == NULL && List_split(head, 4) == NULL,
+            "An invalid split should leave the list alone.");
+    List *tail = List_split(head, 1);
+    mu_assert(tail && List_count(head) == 1 && List_count(tail) == 2 &&
+            List_first(tail) == test2 && !tail->first->prev && !head->last->next,
+            "Middle split made wrong links.");
+    List_join(head, tail);
+    mu_assert(!List_count(tail) && List_count(head) == 3 &&
+            head->first->next->prev == head->first && List_last(head) == test3,
+            "Join should move nodes and empty the tail.");
+    List_destroy(tail);
+
+    tail = List_split(head, 0);
+    mu_assert(tail && !List_count(head) && List_count(tail) == 3,
+            "Zero split should move all the nodes.");
+    List *empty = List_split(tail, 3);
+    mu_assert(empty && !List_count(empty) && List_count(tail) == 3,
+            "End split should return an empty list.");
+    List_destroy(empty);
+    List_destroy(tail);
+    List_destroy(head);
+    return NULL;
+}
+
 static char *all_tests(void)
 {
     mu_suite_start();
@@ -83,6 +130,8 @@ static char *all_tests(void)
     mu_run_test(test_remove);
     mu_run_test(test_shift);
     mu_run_test(test_destroy);
+    mu_run_test(test_copy);
+    mu_run_test(test_split_join);
 
     return NULL;
 }
