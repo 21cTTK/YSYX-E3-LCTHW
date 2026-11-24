@@ -1,0 +1,5 @@
+/build/
+/bin/
+*.o
+/tests/*_tests
+/tests/tests.log
