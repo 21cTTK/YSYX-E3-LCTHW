@@ -103,6 +103,39 @@ error:
     return -1;
 }
 
+void write_print(const char *fmt, ...)
+{
+    va_list argp;
+    va_start(argp, fmt);
+
+    for (int i = 0; fmt[i] != '\0'; i++) {
+        if (fmt[i] != '%') {
+            putchar(fmt[i]);
+            continue;
+        }
+
+        switch (fmt[++i]) {
+            case 'd':
+                fprintf(stdout, "%d", va_arg(argp, int));
+                break;
+            case 'c':
+                putchar(va_arg(argp, int));
+                break;
+            case 's':
+                fputs(va_arg(argp, char *), stdout);
+                break;
+            case '%':
+                putchar('%');
+                break;
+            default:
+                va_end(argp);
+                return;
+        }
+    }
+
+    va_end(argp);
+}
+
 int main(int argc, char *argv[])
 {
     char *first_name = NULL;
@@ -110,27 +143,27 @@ int main(int argc, char *argv[])
     char *last_name = NULL;
     int age = 0;
 
-    printf("What's your first name? ");
+    write_print("What's your first name? ");
     int rc = read_scan("%s", MAX_DATA, &first_name);
     check(rc == 0, "Failed first name.");
 
-    printf("What's your initial? ");
+    write_print("What's your initial? ");
     rc = read_scan("%c\n", &initial);
     check(rc == 0, "Failed initial.");
 
-    printf("What's your last name? ");
+    write_print("What's your last name? ");
     rc = read_scan("%s", MAX_DATA, &last_name);
     check(rc == 0, "Failed last name.");
 
-    printf("How old are you? ");
+    write_print("How old are you? ");
     rc = read_scan("%d", &age);
     check(rc == 0, "Failed age.");
 
-    printf("---- RESULTS ----\n");
-    printf("First Name: %s", first_name);
-    printf("Initial: '%c'\n", initial);
-    printf("Last Name: %s", last_name);
-    printf("Age: %d\n", age);
+    write_print("---- RESULTS ----\n");
+    write_print("First Name: %s", first_name);
+    write_print("Initial: '%c'\n", initial);
+    write_print("Last Name: %s", last_name);
+    write_print("Age: %d\n", age);
 
     free(first_name);
     free(last_name);
